@@ -11,13 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->rememberToken();
+        Schema::create('refunds', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->foreignUuid('order_detail_id')->references('id')->on('orders_detail')->onDelete('cascade');
+            $table->date('refund_date');
+            $table->time('refund_time');
+            $table->string('refund_reason', 500);
             $table->timestamps();
         });
     }
@@ -27,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('refunds');
     }
 };
