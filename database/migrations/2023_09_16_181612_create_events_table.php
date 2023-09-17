@@ -22,7 +22,7 @@ return new class extends Migration
             $table->time('end_time');
             $table->string('location', 250)->nullable();
             $table->string('image_header_url')->nullable();
-            $table->boolean('status')->default('drafted');
+            $table->string('status')->default('drafted');
             $table->timestamps();
         });
     }
