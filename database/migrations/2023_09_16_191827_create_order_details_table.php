@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('orders_detail', function (Blueprint $table) {
+        Schema::create('order_details', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('order_id')->references('id')->on('orders')->onDelete('cascade');
-            $table->foreignUuid('ticket_type_id')->references('id')->on('tickets_type')->onDelete('cascade');
+            $table->foreignUuid('ticket_type_id')->references('id')->on('ticket_types')->onDelete('cascade');
             $table->integer('quantity');
             $table->float('sale_price');
             $table->float('total');
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('orders_detail');
+        Schema::dropIfExists('order_details');
     }
 };

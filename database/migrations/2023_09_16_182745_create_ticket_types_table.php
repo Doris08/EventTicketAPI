@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tickets_type', function (Blueprint $table) {
+        Schema::create('ticket_types', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('event_id')->references('id')->on('events')->onDelete('cascade');
             $table->string('name', 150);
@@ -32,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tickets_type');
+        Schema::dropIfExists('ticket_types');
     }
 };
