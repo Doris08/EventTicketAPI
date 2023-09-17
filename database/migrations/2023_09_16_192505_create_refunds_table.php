@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('refunds', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('order_detail_id')->references('id')->on('order_details')->onDelete('cascade');
-            $table->date('refund_date');
-            $table->time('refund_time');
-            $table->string('refund_reason', 500);
+            $table->date('date');
+            $table->time('time');
+            $table->string('reason', 500);
             $table->timestamps();
         });
     }
