@@ -20,9 +20,9 @@ return new class extends Migration
             $table->time('start_time');
             $table->date('end_date');
             $table->time('end_time');
-            $table->string('location', 250);
-            $table->string('image_header_url');
-            $table->boolean('status');
+            $table->string('location', 250)->nullable();
+            $table->string('image_header_url')->nullable();
+            $table->string('status')->default('drafted');
             $table->timestamps();
         });
     }
