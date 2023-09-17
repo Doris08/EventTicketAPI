@@ -24,7 +24,7 @@ class CreateRequest extends FormRequest
         return [
             'order_id' => 'required|exists:orders,id',
             'ticket_type_id' => 'required|exists:ticket_types,id',
-            'quantity' => 'required|integer',
+            'quantity' => 'required|integer|min:1',
             'sale_price' => 'required|float',
         ];
     }
@@ -38,6 +38,7 @@ class CreateRequest extends FormRequest
             'ticket_type_id.required' => 'Ticket Type is required',
             'quantity.required' => 'Quantity is required',
             'quantity.integer' => 'Integer format is required in Quantity',
+            'quantity.min' => 'Quantity cannot be lower than 1',
             'sale_price.required' => 'Sale Price is required',
             'sale_price.float' => 'Float format is required in Sale Price',
         ];

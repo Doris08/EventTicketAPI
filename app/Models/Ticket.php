@@ -7,12 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Ramsey\Uuid\Uuid;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Facades\Redis;
 
-class Refund extends Model
+class Ticket extends Model
 {
     use HasFactory, HasUuids;
     
-    protected $table = 'refunds';
+    protected $table = 'tickets';
 
     protected $guarded = ['id'];
 
@@ -29,9 +31,13 @@ class Refund extends Model
         return ['id'];
     }
 
-    public function ticket(): BelongsTo
+    public function orderDetail(): BelongsTo
     {
-        return $this->belongsTo(Ticket::class);
+        return $this->belongsTo(OrderDetail::class);
     }
 
+    public function refund(): HasOne
+    {
+        return $this->hasOne(Refund::class);
+    }
 }

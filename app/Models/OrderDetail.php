@@ -44,4 +44,9 @@ class OrderDetail extends Model
         return $this->hasOne(Refund::class);
     }
 
+    public function ticket(): HasOne
+    {
+        return $this->hasOne(Ticket::class);
+    }
+
 }

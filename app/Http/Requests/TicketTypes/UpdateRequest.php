@@ -24,7 +24,7 @@ class UpdateRequest extends FormRequest
         return [
             'name' => 'max:150',
             'description' => 'max:500',
-            'quantity_available' => 'integer',
+            'quantity_available' => 'integer|min:1',
             'price' => 'float',
             'sale_start_date' => 'date|before:sale_end_date',
             'sale_start_time' => 'time|before:sale_end_time',
@@ -40,6 +40,7 @@ class UpdateRequest extends FormRequest
             'name.max' => 'The maximun number of characters in Name is 150',
             'description.max' => 'The maximun number of characters in Name is 150',
             'quantity_available.integer' => 'Integer format is required in Quantity Available',
+            'quantity_available.min' => 'Quantity Available cannot be lower than 1',
             'sale_start_date.date' => 'Date format is required in Sale Start Date',
             'sale_start_date.before' => 'Sale Start Date needs to be lower than Sale End Date',
             'sale_start_time.date' => 'Time format is required in Sale Start Time',

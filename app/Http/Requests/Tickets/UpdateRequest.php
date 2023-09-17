@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\OrderDetails;
+namespace App\Http\Requests\Tickets;
 
 use Illuminate\Foundation\Http\FormRequest;
 
@@ -22,17 +22,14 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'quantity' => 'integer|min:1',
-            'sale_price' => 'float',
+            'status' => 'max:25',
         ];
     }
 
     public function messages(): array
     {
         return [
-            'quantity.integer' => 'Integer format is required in Quantity',
-            'quantity.min' => 'Quantity cannot be lower than 1',
-            'sale_price.float' => 'Float format is required in Sale Price',
+            'status.max' => 'The maximun number of characters in Status is 25',
         ];
     }
 }
