@@ -10,7 +10,8 @@ use Ramsey\Uuid\Uuid;
 
 class Attendee extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory;
+    use HasUuids;
 
     protected $table = 'attendees';
 

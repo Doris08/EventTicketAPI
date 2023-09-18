@@ -11,7 +11,8 @@ use Ramsey\Uuid\Uuid;
 
 class OrderDetail extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory;
+    use HasUuids;
 
     protected $table = 'order_details';
 

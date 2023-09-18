@@ -11,7 +11,8 @@ use Ramsey\Uuid\Uuid;
 
 class Event extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory;
+    use HasUuids;
 
     protected $table = 'events';
 

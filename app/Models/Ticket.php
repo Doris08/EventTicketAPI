@@ -11,7 +11,8 @@ use Ramsey\Uuid\Uuid;
 
 class Ticket extends Model
 {
-    use HasFactory, HasUuids;
+    use HasFactory;
+    use HasUuids;
 
     protected $table = 'tickets';
 
