@@ -44,11 +44,6 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public function userType(): BelongsTo
-    {
-        return $this->belongsTo(UserType::class);
-    }
-
     public function attendee(): HasOne
     {
         return $this->hasOne(UserType::class);
