@@ -56,7 +56,7 @@ class CreateRequest extends FormRequest
             'sale_end_date.date' => 'Date format is required in Sale End Date',
             'sale_end_date.before' => 'Sale End Date needs to be higher than Sale Start Date',
             'sale_end_time.required' => 'Sale End Time is required',
-            'sale_end_time.date' => 'Time format is required in Sale End Time' ,
+            'sale_end_time.date' => 'Time format is required in Sale End Time',
             'sale_end_time.before' => 'Sale End Time needs to be higher than Sale Start Time',
             'purchase_limit.required' => 'Purchase Limit is required',
             'purchase_limit.integer' => 'Integer format is required in Purchase Limit',

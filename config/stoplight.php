@@ -33,7 +33,7 @@ return [
     |
     */
     'openapi' => [
-        'path' => env('STOPLIGHT_OPENAPI_PATH', 'https://api.apis.guru/v2/specs/github.com/1.1.4/openapi.yaml')
+        'path' => env('STOPLIGHT_OPENAPI_PATH', 'https://api.apis.guru/v2/specs/github.com/1.1.4/openapi.yaml'),
     ],
 
     'config' => [
@@ -51,7 +51,7 @@ return [
         | Memory: Keeps the history of your “URL” in memory (does not read or write to the address bar)
         |
         */
-        'router' => "hash",
+        'router' => 'hash',
 
         /*
         |--------------------------------------------------------------------------
@@ -67,6 +67,6 @@ return [
         |          existing websites that have their own sidebar or other columns already.
         |
         */
-        'layout' => "sidebar",
-    ]
+        'layout' => 'sidebar',
+    ],
 ];

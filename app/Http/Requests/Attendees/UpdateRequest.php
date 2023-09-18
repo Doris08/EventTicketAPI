@@ -35,5 +35,4 @@ class UpdateRequest extends FormRequest
             'email.email' => 'Email format is required',
         ];
     }
-
 }
