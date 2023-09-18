@@ -37,5 +37,4 @@ class CreateRequest extends FormRequest
             'email.email' => 'Email format is required',
         ];
     }
-
 }
