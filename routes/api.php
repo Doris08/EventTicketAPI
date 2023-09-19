@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\Events\EventController;
+use App\Http\Controllers\Api\TicketTypes\TicketTypeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,3 +30,10 @@ Route::get('/events/index', [EventController::class, 'index']);
 Route::get('/events/show/{id}', [EventController::class, 'show']);
 Route::patch('/events/update/{id}', [EventController::class, 'update']);
 Route::delete('/events/delete/{id}', [EventController::class, 'destroy']);
+
+//Routes for management of ticket types
+Route::post('/ticket_types/store', [TicketTypeController::class, 'store']);
+Route::get('/ticket_types/index', [TicketTypeController::class, 'index']);
+Route::get('/ticket_types/show/{id}', [TicketTypeController::class, 'show']);
+Route::patch('/ticket_types/update/{id}', [TicketTypeController::class, 'update']);
+Route::delete('/ticket_types/delete/{id}', [TicketTypeController::class, 'destroy']);
