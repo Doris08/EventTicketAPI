@@ -22,9 +22,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+
 //Routes for management of events
-Route::get('/events.index', [EventController::class, 'index']);
-Route::get('/events.show', [EventController::class, 'show']);
 Route::post('/events/store', [EventController::class, 'store']);
-Route::middleware('auth:sanctum')->patch('/events.update', [EventController::class, 'update']);
-Route::middleware('auth:sanctum')->delete('/events.delete', [EventController::class, 'delete']);
+Route::get('/events/index', [EventController::class, 'index']);
+Route::get('/events/show/{id}', [EventController::class, 'show']);
+Route::patch('/events/update/{id}', [EventController::class, 'update']);
+Route::delete('/events/delete/{id}', [EventController::class, 'destroy']);
