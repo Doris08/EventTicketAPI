@@ -68,7 +68,7 @@ class TicketTypeController extends Controller
 
     public function update(UpdateRequest $request, $id)
     {
-        Event::where('id', $id)->update([
+        TicketType::where('id', $id)->update([
             'name' => $request->name,
             'description' => $request->description,
             'quantity_available' => $request->quantity_available,
