@@ -22,25 +22,22 @@ class CreateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'order_id' => 'required|exists:orders,id',
             'ticket_type_id' => 'required|exists:ticket_types,id',
             'quantity' => 'required|integer|min:1',
-            'sale_price' => 'required|float',
+            'sale_price' => 'required|numeric',
         ];
     }
 
     public function messages(): array
     {
         return [
-            'order_id.exists' => 'Order does not exist',
-            'order_id.required' => 'Order is required',
             'ticket_type_id.exists' => 'Ticket Type does not exist',
             'ticket_type_id.required' => 'Ticket Type is required',
             'quantity.required' => 'Quantity is required',
             'quantity.integer' => 'Integer format is required in Quantity',
             'quantity.min' => 'Quantity cannot be lower than 1',
             'sale_price.required' => 'Sale Price is required',
-            'sale_price.float' => 'Float format is required in Sale Price',
+            'sale_price.numeric' => 'Numeric format is required in Sale Price',
         ];
     }
 }

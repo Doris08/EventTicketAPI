@@ -3,6 +3,8 @@
 namespace App\Http\Requests\Orders;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class CreateRequest extends FormRequest
 {
@@ -24,7 +26,7 @@ class CreateRequest extends FormRequest
         return [
             'event_id' => 'required|exists:events,id',
             'purchase_date' => 'required|date',
-            'status' => 'required|max:25',
+            'order_details' => 'required|array'
         ];
     }
 
@@ -35,8 +37,20 @@ class CreateRequest extends FormRequest
             'event_id.required' => 'Event is required',
             'purchase_date.required' => 'Date is required',
             'purchase_date.date' => 'Date format is required',
-            'status.required' => 'Status is required',
-            'status.max' => 'The maximun number of characters in Status is 25',
+            'order_details.required' => 'Needs at least 1 Order Detail',
+            'order_details.array' => 'Array format is required in Order Detail',
         ];
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        $errors = [
+            'status' => false,
+            'code' => 422,
+            'message' => 'Unprocessable entity',
+            'errors_validation' =>  $validator->errors()
+        ];
+
+        throw new HttpResponseException(response()->json($errors, 422));
     }
 }

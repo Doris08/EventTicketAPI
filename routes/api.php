@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\Events\EventController;
 use App\Http\Controllers\Api\TicketTypes\TicketTypeController;
+use App\Http\Controllers\Api\Orders\OrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,3 +38,8 @@ Route::get('/ticket_types/index', [TicketTypeController::class, 'index']);
 Route::get('/ticket_types/show/{id}', [TicketTypeController::class, 'show']);
 Route::patch('/ticket_types/update/{id}', [TicketTypeController::class, 'update']);
 Route::delete('/ticket_types/delete/{id}', [TicketTypeController::class, 'destroy']);
+
+//Routes for management of orders
+Route::post('/orders/store', [OrderController::class, 'store']);
+Route::get('/orders/index', [OrderController::class, 'index']);
+Route::get('/orders/show/{id}', [OrderController::class, 'show']);

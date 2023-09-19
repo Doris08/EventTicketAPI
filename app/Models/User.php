@@ -83,7 +83,7 @@ class User extends Authenticatable
         return $this->hasMany(Order::class);
     }
 
-    public function organizerName()
+    public function userName()
     {
         return $this->first_name." ".$this->last_name;
     }
