@@ -3,14 +3,10 @@
 namespace App\Http\Controllers\Api\TicketTypes;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Http\Requests\TicketTypes\CreateRequest;
 use App\Http\Requests\TicketTypes\UpdateRequest;
-use App\Models\Event;
-use App\Models\User;
 use App\Http\Resources\TicketType\TicketTypeResource;
 use App\Models\TicketType;
-use Illuminate\Support\Facades\Auth;
 
 class TicketTypeController extends Controller
 {
@@ -19,7 +15,8 @@ class TicketTypeController extends Controller
 
     }
 
-    public function index(){
+    public function index()
+    {
 
         $ticketTypeResources = TicketTypeResource::collection(TicketType::paginate(10));
 
@@ -79,9 +76,9 @@ class TicketTypeController extends Controller
             'sale_end_time' => $request->sale_end_time,
             'purchase_limit' => $request->purchase_limit
         ]);
-            
+
         $ticketTypeResource = new TicketTypeResource(TicketType::findOrFail($id));
-        
+
         return response()->json([
             'status' => true,
             'code' => 200,

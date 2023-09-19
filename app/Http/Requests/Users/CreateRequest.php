@@ -47,7 +47,7 @@ class CreateRequest extends FormRequest
             'password.min' => 'The minimum number of characters in Password is 6',
         ];
     }
-    
+
     protected function failedValidation(Validator $validator)
     {
         $errors = [

@@ -26,7 +26,10 @@ class CreateRequest extends FormRequest
         return [
             'event_id' => 'required|exists:events,id',
             'purchase_date' => 'required|date',
-            'order_details' => 'required|array'
+            'order_details' => 'required|array',
+            'order_details.*.ticket_type_id' => 'required|exists:ticket_types,id',
+            'order_details.*.quantity' => 'required|integer|min:1',
+
         ];
     }
 
@@ -39,6 +42,11 @@ class CreateRequest extends FormRequest
             'purchase_date.date' => 'Date format is required',
             'order_details.required' => 'Needs at least 1 Order Detail',
             'order_details.array' => 'Array format is required in Order Detail',
+            'order_details.*.ticket_type_id.exists' => 'Ticket Type does not exist',
+            'order_details.*.ticket_type_id.required' => 'Ticket Type is required',
+            'order_details.*.quantity.required' => 'Quantity is required',
+            'order_details.*.quantity.integer' => 'Integer format is required in Quantity',
+            'order_details.*.quantity.min' => 'Quantity cannot be lower than 1',
         ];
     }
 

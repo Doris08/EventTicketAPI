@@ -21,7 +21,8 @@ class OrderResource extends JsonResource
             'user' => $this->user->userName(),
             'user_id' => $this->user->id,
             'purchase_date' => $this->purchase_date,
-            'status' => $this->status
+            'status' => $this->status,
+            'order_details' => OrderDetailResource::collection($this->orderDetails),
         ];
     }
 }

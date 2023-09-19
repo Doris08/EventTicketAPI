@@ -62,7 +62,7 @@ class User extends Authenticatable
     {
         return (string) Uuid::uuid4();
     }
-    
+
     public function uniqueIds(): array
     {
         return ['id'];

@@ -8,11 +8,9 @@ use App\Http\Requests\Users\LoginRequest;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-
     public function __construct(protected User $user)
     {
 
@@ -21,7 +19,7 @@ class AuthController extends Controller
     /**
      * Create User
      * @param Request $request
-     * @return User 
+     * @return User
      */
     public function register(CreateRequest $request)
     {

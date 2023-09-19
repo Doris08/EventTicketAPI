@@ -3,13 +3,11 @@
 namespace App\Http\Controllers\Api\Events;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Http\Requests\Events\CreateRequest;
 use App\Http\Requests\Events\UpdateRequest;
 use App\Models\Event;
 use App\Models\User;
 use App\Http\Resources\Events\EventResource;
-use Illuminate\Support\Facades\Auth;
 
 class EventController extends Controller
 {
@@ -18,7 +16,8 @@ class EventController extends Controller
 
     }
 
-    public function index(){
+    public function index()
+    {
 
         $eventResources = EventResource::collection(Event::paginate(10));
 
@@ -76,9 +75,9 @@ class EventController extends Controller
             'location' => $request->location,
             'image_header_url' => $request->image_header_url
         ]);
-            
+
         $eventResource = new EventResource(Event::findOrFail($id));
-        
+
         return response()->json([
             'status' => true,
             'code' => 200,
