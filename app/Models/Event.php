@@ -44,4 +44,21 @@ class Event extends Model
     {
         return $this->hasMany(Order::class);
     }
+
+    public function hasTickets(){
+        return $this->ticketTypes()->exists();
+    }
+
+    public function hasOrders(){
+        if($this->orders()->exists()){
+            $orders = Order::where('event_id', $this->id)->where('status', '<>', 'Refunded')->count();
+            if($orders > 0){
+                return false;
+            }else{
+                return true;
+            }
+        }else{
+            return false;
+        }
+    }
 }

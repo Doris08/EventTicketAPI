@@ -32,6 +32,9 @@ Route::get('/events/show/{id}', [EventController::class, 'show']);
 Route::patch('/events/update/{id}', [EventController::class, 'update']);
 Route::delete('/events/delete/{id}', [EventController::class, 'destroy']);
 
+//Route for publishing event
+Route::patch('/events/publish/{id}', [EventController::class, 'publish']);
+
 //Routes for management of ticket types
 Route::post('/ticket_types/store', [TicketTypeController::class, 'store']);
 Route::get('/ticket_types/index', [TicketTypeController::class, 'index']);

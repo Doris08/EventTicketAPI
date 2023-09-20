@@ -42,7 +42,8 @@ class EventController extends Controller
             'image_header_url' => $request->image_header_url
         ]);
 
-        $eventResource = new EventResource($this->event);
+        $event = Event::findOrFail($this->event->id);
+        $eventResource = new EventResource($event);
 
         return response()->json([
             'status' => true,
@@ -88,13 +89,48 @@ class EventController extends Controller
 
     public function destroy($id)
     {
-        Event::where('id', $id)->delete();
+        if(!$this->event->hasOrders()){
+            Event::where('id', $id)->delete();
+
+            return response()->json([
+                'status' => true,
+                'code' => 200,
+                'message' => "Event Deleted Successfully",
+            ], 200);
+        }else{
+            return response()->json([
+                'status' => false,
+                'code' => 400,
+                'message' => "Cannot Delete Event, it has opened orders",
+            ], 400);
+        }
+
+    }
+
+    public function publish($id)
+    {
+        $this->event = Event::findOrFail($id);
+
+        $publish = "Published";
+
+        if($this->event->hasTickets()){
+            Event::where('id', $id)->update([
+                'status' => $publish
+            ]);
+
+        
+            return response()->json([
+                'status' => true,
+                'code' => 200,
+                'message' => "Event was published successfully",
+            ], 200);
+        }
 
         return response()->json([
-            'status' => true,
-            'code' => 200,
-            'message' => "Event Deleted Successfully",
-        ], 200);
+            'status' => false,
+            'code' => 400,
+            'message' => "Event requires tickets associated for publishing",
+        ], 400);
 
     }
 }

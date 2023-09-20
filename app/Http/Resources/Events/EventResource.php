@@ -4,6 +4,7 @@ namespace App\Http\Resources\Events;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\TicketType\TicketTypeResource;
 
 class EventResource extends JsonResource
 {
@@ -27,7 +28,7 @@ class EventResource extends JsonResource
             'location' => $this->location,
             'image_header_url' => $this->image_header_url,
             'status' => $this->status,
-            //'tickets' => TicketTypesResource::collection($this->ticketTypes),
+            'tickets' => TicketTypeResource::collection($this->ticketTypes),
         ];
     }
 }
