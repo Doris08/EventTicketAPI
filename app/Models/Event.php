@@ -50,15 +50,9 @@ class Event extends Model
     }
 
     public function hasOrders(){
-        if($this->orders()->exists()){
-            $orders = Order::where('event_id', $this->id)->where('status', '<>', 'Refunded')->count();
-            if($orders > 0){
-                return false;
-            }else{
-                return true;
-            }
-        }else{
-            return false;
-        }
+        
+        $orders = Order::where('event_id', $this->id)->where('status', '<>', 'Refunded')->count();
+        
+        return $orders > 0 ? true : false;
     }
 }
