@@ -13,10 +13,15 @@ use App\Services\BaseService;
 class EventService extends BaseService
 {
 
-    public function index()
+    public function index($request)
     {
-        $eventResources = EventResource::collection(Event::paginate(10));
-        return $this->successResponse($eventResources, 201, "Events founded Successfully");
+        $paginate = null;
+        if (isset($request['limit'])) {
+            $paginate = $request['limit'];  
+        } 
+        
+       $eventResources = EventResource::collection(Event::orderBy('name')->paginate($paginate));
+       return $this->successResponse($eventResources, 201, "Events founded Successfully");
     }
 
     public function store($request)
