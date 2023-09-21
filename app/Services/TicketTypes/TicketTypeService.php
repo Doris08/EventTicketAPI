@@ -6,8 +6,9 @@ use App\Http\Requests\TicketTypes\CreateRequest;
 use App\Http\Requests\TicketTypes\UpdateRequest;
 use App\Http\Resources\TicketType\TicketTypeResource;
 use App\Models\TicketType;
+use App\Services\BaseService;
 
-class TicketTypeService 
+class TicketTypeService extends BaseService
 {
     public function index($request)
     {
@@ -17,12 +18,13 @@ class TicketTypeService
         } 
 
         $ticketTypeResources = TicketTypeResource::collection(TicketType::orderBy('name')->paginate($paginate));
-        return $this->successResponse($eventResources, 201, "TicketTypes founded Successfully");
+        return $this->successResponse($ticketTypeResources, 201, "TicketTypes founded Successfully");
     }
 
     public function store($request)
     {
-        
+        $ticketType = new TicketType();
+
         if (!$ticketType->ticketsLimit($request->event_id)){
             
             $ticketType = TicketType::create([
@@ -42,7 +44,7 @@ class TicketTypeService
             return $this->successResponse($ticketTypeResource, 201, "Ticket Type Created Successfully");
 
         }else{
-            return $this->errorsResponse(null, 400, "Ticket Type Could not be created. Limit of 10 for this event has been reached");
+            return $this->errorResponse(null, 400, "Ticket Type Could not be created. Limit of 10 for this event has been reached");
         }
     }
 
@@ -75,7 +77,7 @@ class TicketTypeService
             return $this->successResponse($ticketTypeResource, 200, "Ticket Type Updated Successfully");
 
         }else{
-            return $this->errorsResponse(null, 400, "Quantity Available sent cannot be lower than Quantity already sold");
+            return $this->errorResponse(null, 400, "Quantity Available sent cannot be lower than Quantity already sold");
         } 
     }
     
@@ -90,7 +92,7 @@ class TicketTypeService
 
         }else{
             
-            return $this->errorsResponse(null, 400, "Cannot Delete TicketType, it is in opened orders");
+            return $this->errorResponse(null, 400, "Cannot Delete TicketType, it is in opened orders");
         }
        
     }

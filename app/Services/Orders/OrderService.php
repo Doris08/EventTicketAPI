@@ -27,10 +27,11 @@ class OrderService extends BaseService
 
     public function store(CreateRequest $request)
     {
+        $order = new Order();
         try {
             $order = Order::create([
                 'event_id' => $request->event_id,
-                'user_id' => User::first()->id,
+                'user_id' => auth()->user()->id,
                 'purchase_date' => $request->purchase_date,
                 'status' => 'Sold'
             ]);
