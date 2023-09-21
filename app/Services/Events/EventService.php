@@ -27,7 +27,7 @@ class EventService extends BaseService
     public function store($request)
     {
         $event = Event::create([
-            'organizer_id' => User::first()->id,
+            'organizer_id' => auth()->user()->id,
             'name' => $request->name,
             'description' => $request->description,
             'start_date' => $request->start_date,
