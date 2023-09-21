@@ -16,6 +16,7 @@ return new class () extends Migration {
             $table->string('name', 150);
             $table->string('description', 500)->nullable();
             $table->integer('quantity_available');
+            $table->integer('quantity_sold')->default(0);
             $table->float('price');
             $table->date('sale_start_date');
             $table->time('sale_start_time');
