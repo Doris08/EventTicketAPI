@@ -36,7 +36,9 @@ class AuthController extends Controller
                 'status' => true,
                 'code' => 201,
                 'message' => 'User Created Successfully',
-                'token' => $this->user->createToken("API TOKEN")->plainTextToken
+                'token' => $this->user->createToken("auth_token")->plainTextToken,
+                'token_type' => 'Bearer',
+                'data' => $this->user
             ], 201);
 
         } catch (\Throwable $th) {
@@ -70,7 +72,8 @@ class AuthController extends Controller
                 'status' => true,
                 'code' => 200,
                 'message' => 'User Logged In Successfully',
-                'token' => $this->user->createToken("API TOKEN")->plainTextToken
+                'token' => $user->createToken("API TOKEN")->plainTextToken,
+                'data' => $user
             ], 200);
 
         } catch (\Throwable $th) {
@@ -80,5 +83,16 @@ class AuthController extends Controller
                 'message' => $th->getMessage()
             ], 500);
         }
+    }
+
+    public function logout()
+    {
+        auth()->user()->tokens()->delete();
+
+        return response()->json([
+            'status' => true,
+            'code' => 200,
+            'message' => 'User Logged Out Successfully',
+        ], 200);
     }
 }
