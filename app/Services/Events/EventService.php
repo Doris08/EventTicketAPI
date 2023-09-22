@@ -46,7 +46,7 @@ class EventService extends BaseService
     public function show($id)
     {
         $eventResource = new EventResource(Event::findOrFail($id));
-        return $this->successResponse($eventResource, 201, "Event Founded Successfully");
+        return $this->successResponse($eventResource, 200, "Event Founded Successfully");
     }
 
     public function update($request, $id)
