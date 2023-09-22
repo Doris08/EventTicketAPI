@@ -26,6 +26,11 @@ class OrderController extends Controller
         return (new OrderService())->index($request->all());
     }
 
+    public function show($id)
+    {
+        return (new OrderService())->show($id);
+    }
+
     public function store(CreateRequest $request)
     {
         return (new OrderService())->store($request);

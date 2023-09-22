@@ -27,7 +27,7 @@ class CreateRequest extends FormRequest
             'first_name' => 'required|max:25',
             'last_name' => 'required|max:25',
             'company_name' => 'max:150',
-            'email' => 'required|email|max:150',
+            'email' => 'required|email|max:150|unique:users',
             'password' => 'required|min:6',
         ];
     }
@@ -43,6 +43,7 @@ class CreateRequest extends FormRequest
             'email.required' => 'Email is required',
             'email.email' => 'Email format is required',
             'email.max' => 'The maximun number of characters in Email is 150',
+            'email.unique' => 'Email is already registered',
             'password.required' => 'Password is required',
             'password.min' => 'The minimum number of characters in Password is 6',
         ];

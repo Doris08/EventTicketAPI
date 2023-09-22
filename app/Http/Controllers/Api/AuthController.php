@@ -35,7 +35,7 @@ class AuthController extends Controller
             return response()->json([
                 'status' => true,
                 'code' => 201,
-                'message' => 'User Created Successfully',
+                'message' => 'User created successfully',
                 'token' => $this->user->createToken("auth_token")->plainTextToken,
                 'token_type' => 'Bearer',
                 'data' => $this->user
@@ -45,7 +45,7 @@ class AuthController extends Controller
             return response()->json([
                 'status' => false,
                 'code' => 500,
-                'message' => $th->getMessage()
+                'message' => 'Something went wrong. User could not be created'
             ], 500);
         }
     }
@@ -63,15 +63,15 @@ class AuthController extends Controller
             if (!$user || !Hash::check($request->password, $user->password)) {
                 return response()->json([
                     'status' => false,
-                    'code' => 503,
+                    'code' => 400,
                     'message' => 'Email or Password are not valid.'
-                ], 503);
+                ], 400);
             }
 
             return response()->json([
                 'status' => true,
                 'code' => 200,
-                'message' => 'User Logged In Successfully',
+                'message' => 'User logged in successfully',
                 'token' => $user->createToken("API TOKEN")->plainTextToken,
                 'data' => $user
             ], 200);
@@ -80,7 +80,7 @@ class AuthController extends Controller
             return response()->json([
                 'status' => false,
                 'code' => 500,
-                'message' => $th->getMessage()
+                'Something went wrong. User could not be logged in'
             ], 500);
         }
     }
@@ -92,7 +92,7 @@ class AuthController extends Controller
         return response()->json([
             'status' => true,
             'code' => 200,
-            'message' => 'User Logged Out Successfully',
+            'message' => 'User logged out successfully',
         ], 200);
     }
 }

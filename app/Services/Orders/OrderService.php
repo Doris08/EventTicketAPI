@@ -16,13 +16,21 @@ class OrderService extends BaseService
 
     public function index($request)
     {
-        $paginate = null;
-        if (isset($request['limit'])) {
-            $paginate = $request['limit'];  
-        } 
+        try{
+
+            $paginate = null;
+            if (isset($request['limit'])) {
+                $paginate = $request['limit'];  
+            } 
+            
+            $orderResources = OrderResource::collection(Order::orderBy('id')->paginate($paginate));
+            return $this->successResponse($orderResources, 200, "Orders founded successfully");
+
+        } catch (\Throwable $th) {
+
+            return $this->errorResponse(null, 500, "Something went wrong. Orders could not be founded");
+        }
         
-       $orderResources = OrderResource::collection(Order::orderBy('id')->paginate($paginate));
-       return $this->successResponse($orderResources, 201, "Orders founded Successfully");
     }
 
     public function store(CreateRequest $request)
@@ -55,7 +63,7 @@ class OrderService extends BaseService
             }
             $orderResources = new OrderResource($order);
 
-            return $this->successResponse($orderResources, 201, "Order Created Successfully");
+            return $this->successResponse($orderResources, 201, "Order created successfully");
 
         } catch (\Throwable $th) {
             foreach ($order->orderDetails as $detail) {
@@ -66,7 +74,20 @@ class OrderService extends BaseService
             }
             $order->delete();
 
-            return $this->errorResponse(null, 500, "Something went wrong. Order could not be saved.");
+            return $this->errorResponse(null, 500, "Something went wrong. Order could not be created.");
+        }
+    }
+
+    public function show($id)
+    {
+        try {
+            $orderResource = new OrderResource(Order::findOrFail($id));
+
+            return $this->successResponse($orderResource, 200, "Order founded successfully");
+
+         } catch (\Throwable $th) {
+
+            return $this->errorResponse(null, 500, "Something went wrong. Order could not be founded");
         }
     }
     

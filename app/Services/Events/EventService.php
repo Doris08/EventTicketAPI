@@ -15,86 +15,135 @@ class EventService extends BaseService
 
     public function index($request)
     {
-        $paginate = null;
-        if (isset($request['limit'])) {
-            $paginate = $request['limit'];  
-        } 
+        try{
+            $paginate = null;
+            if (isset($request['limit'])) {
+                $paginate = $request['limit'];  
+            } 
+            
+            $eventResources = EventResource::collection(Event::orderBy('name')->paginate($paginate));
+            return $this->successResponse($eventResources, 200, "Events founded successfully");
+
+        } catch (\Throwable $th) {
+
+            return $this->errorResponse(null, 500, "Something went wrong. Events could not be founded");
+        }
         
-       $eventResources = EventResource::collection(Event::orderBy('name')->paginate($paginate));
-       return $this->successResponse($eventResources, 201, "Events founded Successfully");
     }
 
     public function store($request)
     {
-        $event = Event::create([
-            'organizer_id' => auth()->user()->id,
-            'name' => $request->name,
-            'description' => $request->description,
-            'start_date' => $request->start_date,
-            'start_time' => $request->start_time,
-            'end_date' => $request->end_date,
-            'end_time' => $request->end_time,
-            'location' => $request->location,
-            'image_header_url' => $request->image_header_url
-        ]);
+        try{
 
-        $eventResource = new EventResource($event);
+            $event = Event::create([
+                'organizer_id' => auth()->user()->id,
+                'name' => $request->name,
+                'description' => $request->description,
+                'start_date' => $request->start_date,
+                'start_time' => $request->start_time,
+                'end_date' => $request->end_date,
+                'end_time' => $request->end_time,
+                'location' => $request->location,
+                'image_header_url' => $request->image_header_url
+            ]);
+    
+            $eventResource = new EventResource($event);
+    
+            return $this->successResponse($eventResource, 201, "Event created successfully");
 
-        return $this->successResponse($eventResource, 201, "Event Created Successfully");
+        } catch (\Throwable $th) {
+
+            return $this->errorResponse(null, 500, "Something went wrong. Event could not be created");
+        }
+        
     }
 
     public function show($id)
     {
-        $eventResource = new EventResource(Event::findOrFail($id));
-        return $this->successResponse($eventResource, 201, "Event Founded Successfully");
+        try{
+
+            $eventResource = new EventResource(Event::findOrFail($id));
+            return $this->successResponse($eventResource, 200, "Event founded successfully");
+        
+        }catch (\Throwable $th) {
+
+            return $this->errorResponse(null, 500, "Something went wrong. Event could not be founded");
+        }
+        
     }
 
     public function update($request, $id)
     {
-        Event::where('id', $id)->update([
-            'name' => $request->name,
-            'description' => $request->description,
-            'start_date' => $request->start_date,
-            'start_time' => $request->start_time,
-            'end_date' => $request->end_date,
-            'end_time' => $request->end_time,
-            'location' => $request->location,
-            'image_header_url' => $request->image_header_url
-        ]);
+        try{
 
-        $eventResource = new EventResource(Event::findOrFail($id));
+            Event::where('id', $id)->update([
+                'name' => $request->name,
+                'description' => $request->description,
+                'start_date' => $request->start_date,
+                'start_time' => $request->start_time,
+                'end_date' => $request->end_date,
+                'end_time' => $request->end_time,
+                'location' => $request->location,
+                'image_header_url' => $request->image_header_url
+            ]);
+    
+            $eventResource = new EventResource(Event::findOrFail($id));
+    
+            return $this->successResponse($eventResource, 200, "Event updated successfully");
 
-        return $this->successResponse($eventResource, 201, "Event Updated Successfully");
+        } catch (\Throwable $th) {
+
+            return $this->errorResponse(null, 500, "Something went wrong. Event could not be updated");
+        }
+        
     }
 
     public function destroy($id)
     {
-        $event = Event::findOrFail($id);
+        try{
+
+            $event = Event::findOrFail($id);
     
-        if(!$event->hasOrders()){
-            Event::where('id', $id)->delete();
-            return $this->successResponse(null, 201, "Event Deleted Successfully");
-        }else{
-            return $this->errorResponse(null, 400, "Cannot Delete Event, it has opened orders");
+            if(!$event->hasOrders()){
+                Event::where('id', $id)->delete();
+                return $this->successResponse(null, 200, "Event deleted successfully");
+            }else{
+                return $this->errorResponse(null, 400, "Cannot delete event, it has opened orders");
+            }
+
+        } catch (\Throwable $th) {
+
+            return $this->errorResponse(null, 500, "Something went wrong. Event could not be deleted");
+
         }
+        
     }
 
     public function publish($id)
     {
-        $event = Event::findOrFail($id);
+        try{
 
-        $publish = "Published";
+            $event = Event::findOrFail($id);
 
-        if($event->hasTickets()){
-            
-            Event::where('id', $id)->update([
-                'status' => $publish
-            ]);
+            $publish = "Published";
 
-            return $this->successResponse(null, 200, "Event was published successfully");
+            if($event->hasTickets()){
+                
+                Event::where('id', $id)->update([
+                    'status' => $publish
+                ]);
+
+                return $this->successResponse(null, 200, "Event was published successfully");
+            }
+
+            return $this->errorResponse(null, 400, "Event requires tickets associated for publishing");
+        
+        } catch (\Throwable $th) {
+
+            return $this->errorResponse(null, 500, "Something went wrong. Event could not be published");
+    
         }
-
-        return $this->errorResponse(null, 400, "Event requires tickets associated for publishing");
+        
     }
 
 }
