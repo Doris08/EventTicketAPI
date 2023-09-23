@@ -31,7 +31,6 @@ class UpdateRequest extends FormRequest
             'end_date' => 'date|after_or_equal:start_date',
             'end_time' => 'date_format:H:i|after:start_time',
             'location' => 'max:250',
-            'status' => 'boolean',
             'image_header_url' => 'url',
         ];
     }
@@ -50,7 +49,6 @@ class UpdateRequest extends FormRequest
             'end_time.date_format' => 'Time format HH:MM is required in End Time',
             'end_time.before' => 'End Time needs to be higher than Start Time',
             'location.max' => 'The maximun number of characters in Location is 250',
-            'status.boolean' => 'Boolean format is required',
             'image_header_url.url' => 'Url format is required in Image',
         ];
     }

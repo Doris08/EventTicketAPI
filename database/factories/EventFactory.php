@@ -21,15 +21,14 @@ class EventFactory extends Factory
         $user = User::factory()->create();
         return [
             'organizer_id' => $user->id,
-            'name' => fake()->name(),
-            'description' => fake()->sentence(),
-            'start_date' => '2023-08-08',
-            'start_time' => '12:30',
-            'end_date' => '2023-08-12',
-            'end_time' => '23:59',
-            'location' => fake()->address(),
-            'image_header_url' => fake()->url(),
-            'status' => 'Drafted',
+            'name' => $this->faker->name(),
+            'description' => $this->faker->sentence(),
+            'start_date' => now()->format('Y-m-d'),
+            'start_time' => now()->format('H:i'),
+            'end_date' => now()->addDays(1)->format('Y-m-d'),
+            'end_time' => now()->addHour(1)->format('H:i'),
+            'location' => $this->faker->address(),
+            'image_header_url' => $this->faker->url(),
         ];
     }
 }
