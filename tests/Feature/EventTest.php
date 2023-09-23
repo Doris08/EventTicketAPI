@@ -8,7 +8,7 @@ use Tests\TestCase;
 use App\Models\User;
 use App\Models\Event;
 
-class EventsTest extends TestCase
+class EventTest extends TestCase
 {
     use WithFaker; 
 
