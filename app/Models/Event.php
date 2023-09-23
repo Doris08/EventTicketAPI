@@ -16,7 +16,23 @@ class Event extends Model
 
     protected $table = 'events';
 
-    protected $guarded = ['id'];
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'organizer_id',
+        'name',
+        'description',
+        'start_date',
+        'start_time',
+        'end_date',
+        'end_time',
+        'location',
+        'image_header_url',
+        'status',
+    ];
 
     public $timestamps = false;
 
