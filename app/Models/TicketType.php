@@ -52,26 +52,29 @@ class TicketType extends Model
         return $this->hasMany(OrderDetail::class);
     }
 
-    public function ticketsLimit($eventId){
-        
+    public function ticketsLimit($eventId)
+    {
+
         $ticketQty = TicketType::where('event_id', $eventId)->count();
-        
+
         return $ticketQty >= 10 ? true : false;
     }
 
-    public function quantityAvailableLimit($quantity){
-       if($this->quantity_sold > $quantity){
+    public function quantityAvailableLimit($quantity)
+    {
+        if($this->quantity_sold > $quantity) {
             return true;
-       }
-       return false;
+        }
+        return false;
     }
 
-    public function hasOrders(){
-        
+    public function hasOrders()
+    {
+
         $orders = DB::table('orders')
                     ->join('order_details', 'orders.id', '=', 'order_details.order_id')
                     ->where('order_details.ticket_type_id', $this->id)->where('orders.status', '<>', 'Refunded')->count();
-        
+
         return $orders > 0 ? true : false;
 
     }

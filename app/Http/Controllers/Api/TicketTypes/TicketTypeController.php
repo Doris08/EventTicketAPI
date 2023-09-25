@@ -5,9 +5,7 @@ namespace App\Http\Controllers\Api\TicketTypes;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TicketTypes\CreateRequest;
 use App\Http\Requests\TicketTypes\UpdateRequest;
-use App\Http\Resources\TicketType\TicketTypeResource;
 use App\Models\TicketType;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Services\TicketTypes\TicketTypeService;
 

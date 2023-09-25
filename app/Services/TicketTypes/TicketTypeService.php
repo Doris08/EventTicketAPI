@@ -1,9 +1,7 @@
 <?php
+
 namespace App\Services\TicketTypes;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\TicketTypes\CreateRequest;
-use App\Http\Requests\TicketTypes\UpdateRequest;
 use App\Http\Resources\TicketType\TicketTypeResource;
 use App\Models\TicketType;
 use App\Services\BaseService;
@@ -12,12 +10,12 @@ class TicketTypeService extends BaseService
 {
     public function index($request)
     {
-        try{
+        try {
 
             $paginate = null;
             if (isset($request['limit'])) {
-                $paginate = $request['limit'];  
-            } 
+                $paginate = $request['limit'];
+            }
 
             $ticketTypeResources = TicketTypeResource::collection(TicketType::orderBy('name')->paginate($paginate));
             return $this->successResponse($ticketTypeResources, 200, "Ticket types founded successfully");
@@ -26,17 +24,17 @@ class TicketTypeService extends BaseService
 
             return $this->errorResponse(null, 500, "Something went wrong. TicketTypes could not be founded");
         }
-        
+
     }
 
     public function store($request)
     {
-        try{
+        try {
 
             $ticketType = new TicketType();
 
-            if (!$ticketType->ticketsLimit($request->event_id)){
-            
+            if (!$ticketType->ticketsLimit($request->event_id)) {
+
                 $ticketType = TicketType::create([
                 'event_id' => $request->event_id,
                 'name' => $request->name,
@@ -53,21 +51,21 @@ class TicketTypeService extends BaseService
                 $ticketTypeResource = new TicketTypeResource($ticketType);
                 return $this->successResponse($ticketTypeResource, 201, "Ticket Type Created Successfully");
 
-            }else{
+            } else {
                 return $this->errorResponse(null, 400, "Ticket type could not be created. Limit of 10 for this event has been reached");
             }
-        
+
         } catch (\Throwable $th) {
 
             return $this->errorResponse(null, 500, "Something went wrong. Ticket type could not be created");
-        
+
         }
-        
+
     }
 
     public function show($id)
     {
-        try{
+        try {
 
             $ticketTypeResource = new TicketTypeResource(TicketType::findOrFail($id));
 
@@ -77,16 +75,16 @@ class TicketTypeService extends BaseService
 
             return $this->errorResponse(null, 500, "Something went wrong. Ticket type could not be founded");
         }
-        
+
     }
 
     public function update($request, $id)
     {
-        try{
+        try {
 
             $ticketType = TicketType::findOrFail($id);
 
-            if(!$ticketType->quantityAvailableLimit($request->quantity_available)){
+            if(!$ticketType->quantityAvailableLimit($request->quantity_available)) {
                 TicketType::where('id', $id)->update([
                     'name' => $request->name,
                     'description' => $request->description,
@@ -98,11 +96,11 @@ class TicketTypeService extends BaseService
                     'sale_end_time' => $request->sale_end_time,
                     'purchase_limit' => $request->purchase_limit
                 ]);
-        
+
                 $ticketTypeResource = new TicketTypeResource(TicketType::findOrFail($id));
                 return $this->successResponse($ticketTypeResource, 200, "Ticket type updated successfully");
 
-            }else{
+            } else {
                 return $this->errorResponse(null, 400, "Quantity available sent cannot be lower than quantity already sold");
             }
 
@@ -110,22 +108,22 @@ class TicketTypeService extends BaseService
 
             return $this->errorResponse($th, 500, "Something went wrong. Ticket type could not be updated");
         }
-         
+
     }
-    
+
     public function destroy($id)
     {
-        try{
+        try {
 
             $ticketType = TicketType::findOrFail($id);
-    
-            if(!$ticketType->hasOrders()){
+
+            if(!$ticketType->hasOrders()) {
                 TicketType::where('id', $id)->delete();
 
                 return $this->successResponse(null, 200, "Event deleted successfully");
 
-            }else{
-                
+            } else {
+
                 return $this->errorResponse(null, 400, "Cannot delete ticket type, it is in opened orders");
             }
 
@@ -133,6 +131,6 @@ class TicketTypeService extends BaseService
 
             return $this->errorResponse($th, 500, "Something went wrong. Ticket type could not be deleted");
         }
-     
+
     }
 }

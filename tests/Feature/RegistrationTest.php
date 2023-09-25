@@ -2,12 +2,8 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
-use Illuminate\Support\Facades\Hash;
-use App\Models\User;
-
 
 class RegistrationTest extends TestCase
 {
@@ -36,22 +32,31 @@ class RegistrationTest extends TestCase
     }
 
     /** @test */
-    /*public function a_user_can_login()
+    public function a_user_can_login()
     {
 
         $this->withoutExceptionHandling();
 
-        $user = User::factory()->create();
+        $email = $this->faker->unique->safeEmail;
+        $password = 'password';
 
-        $response = $this->post('api/login', [
-            'email' => $user->email,
-            'password' => $user->password
-        ]);
+        $attrributes = [
+            'first_name' => $this->faker->name,
+            'last_name' => $this->faker->name,
+            'company_name' => $this->faker->address,
+            'email' => $email,
+            'password' => $password,
+        ];
 
-        dd($response);
+        $response = $this->post('api/register', $attrributes);
 
-        $this->assertAuthenticatedAs($user);
+        $user = [
+            'email' => $email,
+            'password' => $password,
+        ];
+
+        $response = $this->post('api/login', $user);
 
         $response->assertStatus(200);
-    }*/
+    }
 }

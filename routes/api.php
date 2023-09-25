@@ -27,10 +27,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 
-Route::middleware(['auth:sanctum'])->group(function(){
-    
+Route::middleware(['auth:sanctum'])->group(function () {
+
     Route::post('/logout', [AuthController::class, 'logout']);
-    
+
     //Routes for management of events
     Route::post('/events/store', [EventController::class, 'store']);
     Route::patch('/events/update/{id}', [EventController::class, 'update']);
@@ -51,7 +51,7 @@ Route::middleware(['auth:sanctum'])->group(function(){
 
     //Routes for management of tickets
     Route::post('/tickets/refund', [TicketController::class, 'refund']);
-    
+
 });
 
 //Routes for management of events

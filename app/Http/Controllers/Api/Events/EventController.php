@@ -7,8 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Events\CreateRequest;
 use App\Http\Requests\Events\UpdateRequest;
 use App\Models\Event;
-use App\Models\User;
-use App\Http\Resources\Events\EventResource;
 use Illuminate\Http\Request;
 
 class EventController extends Controller
@@ -20,7 +18,7 @@ class EventController extends Controller
 
     public function index(Request $request)
     {
-       return (new EventService())->index($request->all());
+        return (new EventService())->index($request->all());
     }
 
     public function store(CreateRequest $request)

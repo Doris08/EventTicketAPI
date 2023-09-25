@@ -61,14 +61,16 @@ class Event extends Model
         return $this->hasMany(Order::class);
     }
 
-    public function hasTickets(){
+    public function hasTickets()
+    {
         return $this->ticketTypes()->exists();
     }
 
-    public function hasOrders(){
-        
+    public function hasOrders()
+    {
+
         $orders = Order::where('event_id', $this->id)->where('status', '<>', 'Refunded')->count();
-        
+
         return $orders > 0 ? true : false;
     }
 }

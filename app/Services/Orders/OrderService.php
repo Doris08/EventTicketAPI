@@ -1,12 +1,10 @@
 <?php
+
 namespace App\Services\Orders;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\Orders\CreateRequest;
-use App\Models\User;
 use App\Http\Resources\Orders\OrderResource;
 use App\Models\Attendee;
-use App\Models\Event;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\TicketType;
@@ -15,15 +13,14 @@ use App\Services\BaseService;
 
 class OrderService extends BaseService
 {
-
     public function index($request)
     {
-        try{
+        try {
 
             $paginate = null;
             if (isset($request['limit'])) {
-                $paginate = $request['limit'];  
-            } 
+                $paginate = $request['limit'];
+            }
 
             $orderResources = OrderResource::collection(Order::orderBy('purchase_date')->paginate($paginate));
 
@@ -32,10 +29,10 @@ class OrderService extends BaseService
                 $orders = Order::join('events', 'events.id', '=', 'orders.event_id')
                                 ->join('attendees', 'attendees.id', '=', 'orders.attendee_id')
                                 ->join('ticket_types', 'events.id', '=', 'ticket_types.event_id')
-                                ->where('orders.purchase_date','LIKE',"%{$search}%")
-                                ->orWhere('events.name','LIKE',"%{$search}%")
-                                ->orWhere('attendees.name','LIKE',"%{$search}%")
-                                ->orWhere('ticket_types.name','LIKE',"%{$search}%");
+                                ->where('orders.purchase_date', 'LIKE', "%{$search}%")
+                                ->orWhere('events.name', 'LIKE', "%{$search}%")
+                                ->orWhere('attendees.name', 'LIKE', "%{$search}%")
+                                ->orWhere('ticket_types.name', 'LIKE', "%{$search}%");
                 $orderResources = OrderResource::collection($orders);
             }
 
@@ -45,7 +42,7 @@ class OrderService extends BaseService
 
             return $this->errorResponse(null, 500, "Something went wrong. Orders could not be founded");
         }
-        
+
     }
 
     public function store(CreateRequest $request)
@@ -53,7 +50,7 @@ class OrderService extends BaseService
         $order = new Order();
         $attendee = new Attendee();
         try {
-            
+
             $attendee = Attendee::create([
                 'name' => $request->attendee_name,
                 'email' => $request->attendee_email
@@ -72,25 +69,26 @@ class OrderService extends BaseService
                     $detail = $request->order_details[$i];
                     $ticketType = TicketType::findOrFail($detail['ticket_type_id']);
 
-                    if($detail['quantity'] > $ticketType->purchase_limit){
+                    if($detail['quantity'] > $ticketType->purchase_limit) {
                         return  $this->verifyPurchaseLimit($order, $attendee, $detail, $ticketType);
                     }
 
-                    if($detail['quantity'] > $ticketType->quantity_available){
+                    if($detail['quantity'] > $ticketType->quantity_available) {
                         return $this->verifyQtyAvailable($order, $attendee, $detail, $ticketType);
-                    } 
+                    }
 
                     $orderDetail = $this->createOrderDetail($order, $ticketType, $detail);
-                    
+
                     $this->createTickets($orderDetail);
                 }
             }
 
             $orderTotal = OrderDetail::where('order_id', $order->id)->sum('total');
 
-            $payment = app('App\Http\Controllers\PaymentController')->postPayment($orderTotal);
+            $payment = $this->postPayment($orderTotal);
 
             return $this->asignOrderAttendeePayment($attendee, $payment, $order, $request->order_details);
+
 
         } catch (\Throwable $th) {
             foreach ($order->orderDetails as $detail) {
@@ -112,13 +110,13 @@ class OrderService extends BaseService
 
             return $this->successResponse($orderResource, 200, "Order founded successfully");
 
-         } catch (\Throwable $th) {
+        } catch (\Throwable $th) {
 
             return $this->errorResponse(null, 500, "Something went wrong. Order could not be founded");
         }
     }
 
-    function createOrderDetail($order, $ticketType, $detail)
+    public function createOrderDetail($order, $ticketType, $detail)
     {
         $orderDetail = OrderDetail::create([
             'order_id' => $order->id,
@@ -131,23 +129,23 @@ class OrderService extends BaseService
         return $orderDetail;
     }
 
-    function asignOrderAttendeePayment($attendee, $payment, $order, $orderDetails)
+    public function asignOrderAttendeePayment($attendee, $payment, $order, $orderDetails)
     {
-        
-        if($payment == 500){
+
+        if($payment == 500) {
             OrderDetail::where('order_id', $order->id)->delete();
             $order->delete();
             $attendee->delete();
 
             return $this->errorResponse(null, 400, "Payment could not be processed");
 
-        }else {
+        } else {
             $this->updateTicketsQuantity($orderDetails);
 
-            $order->update([    
+            $order->update([
                 'attendee_id' => $attendee->id,
                 'payment_id' => $payment
-            ]); 
+            ]);
 
             $orderResources = new OrderResource($order);
 
@@ -155,9 +153,10 @@ class OrderService extends BaseService
         }
     }
 
-    function createTickets($orderDetail){
-        
-        for ($i=0; $i < $orderDetail->quantity; $i++) {
+    public function createTickets($orderDetail)
+    {
+
+        for ($i = 0; $i < $orderDetail->quantity; $i++) {
             Ticket::create([
                 'order_detail_id' => $orderDetail->id,
                 'ticket_type_id' => $orderDetail->ticket_type_id,
@@ -166,35 +165,63 @@ class OrderService extends BaseService
         }
     }
 
-    function updateTicketsQuantity($orderDetails){
+    public function updateTicketsQuantity($orderDetails)
+    {
 
         for ($i = 0; $i < count($orderDetails); $i++) {
 
-           $ticketType = TicketType::findOrFail($orderDetails[$i]['ticket_type_id']);
+            $ticketType = TicketType::findOrFail($orderDetails[$i]['ticket_type_id']);
 
-           TicketType::where('id', $orderDetails[$i]['ticket_type_id'])->update([    
-            'quantity_available' => $ticketType->quantity_available - $orderDetails[$i]['quantity'],
-            'quantity_sold' => $ticketType->quantity_sold + $orderDetails[$i]['quantity']
-            ]);
+            TicketType::where('id', $orderDetails[$i]['ticket_type_id'])->update([
+             'quantity_available' => $ticketType->quantity_available - $orderDetails[$i]['quantity'],
+             'quantity_sold' => $ticketType->quantity_sold + $orderDetails[$i]['quantity']
+             ]);
         }
     }
 
-    function verifyPurchaseLimit($order, $attendee, $detail, $ticketType){
-        
+    public function verifyPurchaseLimit($order, $attendee, $detail, $ticketType)
+    {
+
         OrderDetail::where('order_id', $order->id)->delete();
         $order->delete();
         $attendee->delete();
 
-        return $this->errorResponse(null, 400, "Quantity to buy for TicketType '".$ticketType->name."' is higher tha its purchase limit");  
+        return $this->errorResponse(null, 400, "Quantity to buy for TicketType '".$ticketType->name."' is higher tha its purchase limit");
     }
 
-    function verifyQtyAvailable($order, $attendee, $detail, $ticketType){
-        
+    public function verifyQtyAvailable($order, $attendee, $detail, $ticketType)
+    {
+
         OrderDetail::where('order_id', $order->id)->delete();
         $order->delete();
         $attendee->delete();
 
         return $this->errorResponse(null, 400, "Quantity available for TicketType '".$ticketType->name."' is ".$ticketType->quantity_available ." ticket");
 
+    }
+
+    protected function payment($orderTotal)
+    {
+        try {
+            $stripe = new \Stripe\StripeClient(
+                env('STRIPE_SECRET')
+            );
+
+            Stripe\Stripe::setApiKey(
+                env('STRIPE_SECRET')
+            );
+
+            $response = $stripe->paymentIntents->create([
+                'amount' => $orderTotal,
+                'currency' => 'usd',
+                'payment_method' => 'pm_card_visa',
+              ]);
+
+            return $response->id;
+
+        } catch (\Throwable $th) {
+
+            return 500;
+        }
     }
 }

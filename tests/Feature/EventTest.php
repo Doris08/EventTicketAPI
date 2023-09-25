@@ -2,21 +2,22 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\User;
 use App\Models\Event;
+use App\Models\TicketType;
 
 class EventTest extends TestCase
 {
-    use WithFaker; 
+    use WithFaker;
 
     /**
      * Tets validating that a Event requires a name.
      */
     /** @test */
-    public function a_event_requires_a_name(){
+    public function a_event_requires_a_name()
+    {
 
         $user = User::factory()->create();
         $this->actingAs($user);
@@ -32,12 +33,13 @@ class EventTest extends TestCase
      * Tets for listing events.
      */
     /** @test */
-    public function a_user_can_list_events(){
+    public function a_user_can_list_events()
+    {
 
         $this->withoutExceptionHandling();
 
         $event = Event::factory()->count(5)->create();
-        
+
         $this->get('api/events/index')
                 ->assertStatus(200);
     }
@@ -68,12 +70,13 @@ class EventTest extends TestCase
      * Tets for showing an event only if the user is authenticated.
      */
     /** @test */
-    public function a_user_can_view_an_event(){
+    public function a_user_can_view_an_event()
+    {
 
         $this->withoutExceptionHandling();
 
         $event = Event::factory()->create();
-        
+
         $this->get('api/events/show/' . $event->id)
                 ->assertStatus(200);
     }
@@ -115,7 +118,8 @@ class EventTest extends TestCase
      * Tets for showing an event only if the user is authenticated.
      */
     /** @test */
-    public function delete_an_event_requires_authentication(){
+    public function delete_an_event_requires_authentication()
+    {
 
         $this->withoutExceptionHandling();
 
@@ -123,7 +127,7 @@ class EventTest extends TestCase
         $this->actingAs($user);
 
         $event = Event::factory()->create();
-        
+
         $this->delete('api/events/delete/' . $event->id)
                 ->assertStatus(200);
     }
@@ -132,16 +136,17 @@ class EventTest extends TestCase
      * Tets for showing an event only if the user is authenticated.
      */
     /** @test */
-    /*public function a_user_can_publish_an_event(){
+    public function a_user_can_publish_an_event()
+    {
 
         $this->withoutExceptionHandling();
 
         $user = User::factory()->create();
         $this->actingAs($user);
 
-        $event = Event::factory()->create();
-        
-        $this->patch('api/events/publish/'. $event->id)
+        $ticketType = TicketType::factory()->create();
+
+        $this->patch('api/events/publish/'. $ticketType->event_id)
                 ->assertStatus(200);
-    }*/
+    }
 }

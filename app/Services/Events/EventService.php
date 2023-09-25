@@ -2,36 +2,31 @@
 
 namespace App\Services\Events;
 
-use App\Http\Controllers\Controller;
-use App\Http\Requests\Events\CreateRequest;
-use App\Http\Requests\Events\UpdateRequest;
 use App\Models\Event;
-use App\Models\User;
 use App\Http\Resources\Events\EventResource;
 use App\Services\BaseService;
 
 class EventService extends BaseService
 {
-
     public function index($request)
     {
-        try{
+        try {
             $paginate = null;
             if (isset($request['limit'])) {
-                $paginate = $request['limit'];  
-            } 
-            
+                $paginate = $request['limit'];
+            }
+
             $eventResources = EventResource::collection(Event::orderBy('name')->paginate($paginate));
 
             if (isset($request['search'])) {
-                $search = $request['search']; 
-    
+                $search = $request['search'];
+
                 $events = Event::select("*")
-                                ->where('name','LIKE',"%{$search}%")
-                                ->orWhere('description','LIKE',"%{$search}%")
-                                ->orWhere('start_date','LIKE',"%{$search}%")
-                                ->orWhere('location','LIKE',"%{$search}%")->paginate($paginate);
-                    
+                                ->where('name', 'LIKE', "%{$search}%")
+                                ->orWhere('description', 'LIKE', "%{$search}%")
+                                ->orWhere('start_date', 'LIKE', "%{$search}%")
+                                ->orWhere('location', 'LIKE', "%{$search}%")->paginate($paginate);
+
                 $eventResources = EventResource::collection($events);
             }
 
@@ -41,12 +36,12 @@ class EventService extends BaseService
 
             return $this->errorResponse(null, 500, "Something went wrong. Events could not be founded");
         }
-        
+
     }
 
     public function store($request)
     {
-        try{
+        try {
 
             $event = Event::create([
                 'organizer_id' => auth()->user()->id,
@@ -59,35 +54,35 @@ class EventService extends BaseService
                 'location' => $request->location,
                 'image_header_url' => $request->image_header_url
             ]);
-    
+
             $eventResource = new EventResource($event);
-    
+
             return $this->successResponse($eventResource, 201, "Event created successfully");
 
         } catch (\Throwable $th) {
 
             return $this->errorResponse(null, 500, "Something went wrong. Event could not be created");
         }
-        
+
     }
 
     public function show($id)
     {
-        try{
+        try {
 
             $eventResource = new EventResource(Event::findOrFail($id));
             return $this->successResponse($eventResource, 200, "Event founded successfully");
-        
-        }catch (\Throwable $th) {
+
+        } catch (\Throwable $th) {
 
             return $this->errorResponse(null, 500, "Something went wrong. Event could not be founded");
         }
-        
+
     }
 
     public function update($request, $id)
     {
-        try{
+        try {
 
             Event::where('id', $id)->update([
                 'name' => $request->name,
@@ -99,28 +94,28 @@ class EventService extends BaseService
                 'location' => $request->location,
                 'image_header_url' => $request->image_header_url
             ]);
-    
+
             $eventResource = new EventResource(Event::findOrFail($id));
-    
+
             return $this->successResponse($eventResource, 200, "Event updated successfully");
 
         } catch (\Throwable $th) {
 
             return $this->errorResponse(null, 500, "Something went wrong. Event could not be updated");
         }
-        
+
     }
 
     public function destroy($id)
     {
-        try{
+        try {
 
             $event = Event::findOrFail($id);
-    
-            if(!$event->hasOrders()){
+
+            if(!$event->hasOrders()) {
                 Event::where('id', $id)->delete();
                 return $this->successResponse(null, 200, "Event deleted successfully");
-            }else{
+            } else {
                 return $this->errorResponse(null, 400, "Cannot delete event, it has opened orders");
             }
 
@@ -129,19 +124,19 @@ class EventService extends BaseService
             return $this->errorResponse(null, 500, "Something went wrong. Event could not be deleted");
 
         }
-        
+
     }
 
     public function publish($id)
     {
-        try{
+        try {
 
             $event = Event::findOrFail($id);
 
             $publish = "Published";
 
-            if($event->hasTickets()){
-                
+            if($event->hasTickets()) {
+
                 Event::where('id', $id)->update([
                     'status' => $publish
                 ]);
@@ -150,13 +145,13 @@ class EventService extends BaseService
             }
 
             return $this->errorResponse(null, 400, "Event requires tickets associated for publishing");
-        
+
         } catch (\Throwable $th) {
 
             return $this->errorResponse(null, 500, "Something went wrong. Event could not be published");
-    
+
         }
-        
+
     }
 
 }
