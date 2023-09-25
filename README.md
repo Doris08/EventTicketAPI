@@ -1,66 +1,81 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+﻿# Event Management and Ticketing API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Prerequisites
 
-## About Laravel
+Ensure that your machine meets the following requirements before you begin: 
+[Docker](https://www.docker.com/get-started) installed 
+[Docker Compose](https://docs.docker.com/compose/install/) installed
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+For more information about sail read this:
+[Laravel Sail](https://laravel.com/docs/10.x/sail)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Installation
+1. Open a terminal and clone the repository from GitHub:
+	https://github.com/Doris08/EventTicketAPI.git
+	
+	like this:
+	 `git clone https://github.com/Doris08/EventTicketAPI.git` 
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+2. Navigate to the project directory:
+	`cd EventTicketAPI`
 
-## Learning Laravel
+3. Copy the `.env.example` file to configure your `.env` file:
+	`cp .env.example .env`
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+4. Generate an application key for your project:
+	`php artisan key:generate`
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+5. Open the `.env` file and configure the necessary environment variables, such as database settings.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+6. Run the following command to start the development environment using Laravel Sail:
+	`./vendor/bin/sail up -d`
 
-## Laravel Sponsors
+7. Install PHP dependencies using Composer:
+	`./vendor/bin/sail composer install`
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+8. Run database migrations and seed the database with initial data:
+	`./vendor/bin/sail artisan migrate`
 
-### Premium Partners
+## Configuration
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+ 1. If you want to use PhpMyAdmin add this to your `docker-compose.yml` file:
+```
+...
+depends_on: 
+-mysql
+-phpmyadmin 
+...
+```
 
-## Contributing
+2. Go into your services, and add it as a service. We need to make sure to add sail’s network, or else we won’t be able to access our mysql.
+```
+phpmyadmin:
+   image: 'phpmyadmin:latest'
+   ports:
+      8080:80  
+   networks:  
+      sail  
+   environment:
+      PMA_ARBITRARY=1
+```  
+3. Go to your `.env` file and add the parameters 
+	`STRIPE_KEY`  and `STRIPE_SECRET`
+	
+	For more information about Stripe read this:
+	[Stripe Api Documentation](https://stripe.com/docs/api)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
 
-## Code of Conduct
+## Usage
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Now that your project is installed and running, you can access it in your web browser. The project will be available at `http://localhost`. To access the application, follow these steps:
 
-## Security Vulnerabilities
+1.  Open your web browser.
+    
+2.  Visit `http://localhost` in the address bar.
+    
+3.  You should see the homepage of the Laravel application.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+4. 
 
-## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
