@@ -17,7 +17,13 @@ class OrderDetail extends Model
 
     protected $table = 'order_details';
 
-    protected $guarded = ['id'];
+    protected $fillable = [
+        'order_id',
+        'ticket_type_id',
+        'quantity',
+        'sale_price',
+        'total'
+    ];
 
     public $timestamps = false;
 

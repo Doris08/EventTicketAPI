@@ -14,6 +14,8 @@ return new class () extends Migration {
             $table->uuid('id')->primary();
             $table->foreignUuid('event_id')->references('id')->on('events')->onDelete('cascade');
             $table->foreignUuid('user_id')->nullable()->references('id')->on('users')->onDelete('cascade');
+            $table->foreignUuid('attendee_id')->nullable()->references('id')->on('attendees')->onDelete('cascade');
+            $table->string('payment_id')->nullable();
             $table->date('purchase_date');
             $table->string('status', 25);
             $table->timestamps();

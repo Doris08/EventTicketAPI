@@ -15,7 +15,10 @@ class Attendee extends Model
 
     protected $table = 'attendees';
 
-    protected $guarded = ['id'];
+    protected $fillable = [
+        'name',
+        'email',
+    ];
 
     public $timestamps = false;
 

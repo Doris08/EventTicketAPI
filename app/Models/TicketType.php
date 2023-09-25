@@ -17,7 +17,18 @@ class TicketType extends Model
 
     protected $table = 'ticket_types';
 
-    protected $guarded = ['id'];
+    protected $fillable = [
+        'event_id',
+        'name',
+        'description',
+        'quantity_available',
+        'price',
+        'sale_start_date',
+        'sale_start_time',
+        'sale_end_date',
+        'sale_end_time',
+        'purchase_limit'
+    ];
 
     public $timestamps = false;
 

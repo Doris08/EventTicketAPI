@@ -22,6 +22,19 @@ class EventService extends BaseService
             } 
             
             $eventResources = EventResource::collection(Event::orderBy('name')->paginate($paginate));
+
+            if (isset($request['search'])) {
+                $search = $request['search']; 
+    
+                $events = Event::select("*")
+                                ->where('name','LIKE',"%{$search}%")
+                                ->orWhere('description','LIKE',"%{$search}%")
+                                ->orWhere('start_date','LIKE',"%{$search}%")
+                                ->orWhere('location','LIKE',"%{$search}%")->paginate($paginate);
+                    
+                $eventResources = EventResource::collection($events);
+            }
+
             return $this->successResponse($eventResources, 200, "Events founded successfully");
 
         } catch (\Throwable $th) {

@@ -12,7 +12,6 @@ return new class () extends Migration {
     {
         Schema::create('attendees', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('user_id')->nullable()->references('id')->on('users')->onDelete('cascade');
             $table->string('name', 150);
             $table->string('email', 150);
             $table->timestamps();

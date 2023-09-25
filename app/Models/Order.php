@@ -16,7 +16,14 @@ class Order extends Model
 
     protected $table = 'orders';
 
-    protected $guarded = ['id'];
+    protected $fillable = [
+        'event_id',
+        'user_id',
+        'attendee_id',
+        'payment_id',
+        'purchase_date',
+        'status'
+    ];
 
     public $timestamps = false;
 
