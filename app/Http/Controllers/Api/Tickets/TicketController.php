@@ -5,10 +5,11 @@ namespace App\Http\Controllers\Api\Tickets;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Services\Tickets\TicketService;
+use App\Http\Requests\Refunds\CreateRequest;
 
 class TicketController extends Controller
 {
-    public function refund(Request $request)
+    public function refund(CreateRequest $request)
     {
         return (new TicketService())->refund($request);
     }

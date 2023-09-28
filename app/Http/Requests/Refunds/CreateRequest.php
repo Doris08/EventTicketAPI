@@ -22,8 +22,8 @@ class CreateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'order_id' => 'required|exists:order_details,id',
-            'ticket_type_id' => 'required|date',
+            'order_id' => 'required|exists:orders,id',
+            'ticket_type_id' => 'required',
             'quantity_to_refund' => 'required|min:1',
             'reason' => 'required|max:500',
         ];

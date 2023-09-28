@@ -15,7 +15,11 @@ class Refund extends Model
 
     protected $table = 'refunds';
 
-    protected $guarded = ['id'];
+    protected $fillable = [
+        'ticket_id',
+        'datetime',
+        'reason'
+    ];
 
     public $timestamps = false;
 

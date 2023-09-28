@@ -10,6 +10,7 @@ use App\Models\OrderDetail;
 use App\Models\TicketType;
 use App\Models\Ticket;
 use App\Services\BaseService;
+use Stripe;
 
 class OrderService extends BaseService
 {
@@ -85,9 +86,7 @@ class OrderService extends BaseService
 
             $orderTotal = OrderDetail::where('order_id', $order->id)->sum('total');
 
-            $payment = $this->payment($orderTotal);
-
-            //return $payment;
+            $payment = $this->payment((double)$orderTotal);
 
             return $this->asignOrderAttendeePayment($attendee, $payment, $order, $request->order_details);
 
@@ -169,15 +168,11 @@ class OrderService extends BaseService
 
     public function updateTicketsQuantity($orderDetails)
     {
-
         for ($i = 0; $i < count($orderDetails); $i++) {
 
             $ticketType = TicketType::findOrFail($orderDetails[$i]['ticket_type_id']);
-
-            TicketType::where('id', $orderDetails[$i]['ticket_type_id'])->update([
-             'quantity_available' => $ticketType->quantity_available - $orderDetails[$i]['quantity'],
-             'quantity_sold' => $ticketType->quantity_sold + $orderDetails[$i]['quantity']
-             ]);
+            $ticketType->increment('quantity_sold', $orderDetails[$i]['quantity']);
+            $ticketType->decrement('quantity_available', $orderDetails[$i]['quantity']);
         }
     }
 
@@ -214,7 +209,7 @@ class OrderService extends BaseService
             );
 
             $response = $stripe->paymentIntents->create([
-                'amount' => $orderTotal,
+                'amount' => (double)$orderTotal,
                 'currency' => 'usd',
                 'payment_method' => 'pm_card_visa',
             ]);

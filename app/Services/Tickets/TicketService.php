@@ -16,27 +16,24 @@ class TicketService extends BaseService
 
         try {
 
-            $ordersQty = OrderDetail::where('order_id', $request->order_id)
+            $ticketsQtyAvailableToRefund = OrderDetail::where('order_id', $request->order_id)
                                     ->join('tickets', 'order_details.id', '=', 'tickets.order_detail_id')
                                     ->where('ticket_type_id', $request->ticket_type_id)
                                     ->where('tickets.status', 'Sold')->count();
 
-            if($ordersQty < $request->quantity_to_refund) {
-                return $this->errorResponse(null, 400, "Cannot refund tickets, quantity to refund is higher than quantity sold");
+            $ticketsQtyInOrder = OrderDetail::where('order_id', $request->order_id)
+                                    ->join('tickets', 'order_details.id', '=', 'tickets.order_detail_id')
+                                    ->where('ticket_type_id', $request->ticket_type_id)->count();
+
+            if($ticketsQtyAvailableToRefund < $request->quantity_to_refund) {
+                return $this->errorResponse(null, 400, "Cannot refund tickets, quantity to refund is higher than quantity of tickets that can be refunded for this order");
             }
 
-            $ticketsAvailable = OrderDetail::where('order_id', $request->order_id)
-                                            ->join('tickets', 'order_details.id', '=', 'tickets.order_detail_id')
-                                            ->where('tickets.status', 'Sold')->count();
+            $orderDetail = OrderDetail::where('order_id', $request->order_id)->where('ticket_type_id', $request->ticket_type_id)->first();
+            $ticketsRefunded = Ticket::where('order_detail_id', $orderDetail->id)->where('status', 'Refunded')->count();
+            $ticketsSold = Ticket::where('order_detail_id', $orderDetail->id)->where('status', 'Sold')->get();
 
-            if($ticketsAvailable < $request->quantity_to_refund) {
-                return $this->errorResponse(null, 400, "Cannot refund, tickets are in checked-in or refund status for this order");
-            }
-
-            $orderDetail = OrderDetail::where('order_id', $request->order_id)->where('ticket_type_id', $request->ticket_type_id)->get();
-            $tickets = Ticket::where('order_detail_id', $orderDetail[0]['id'])->where('status', 'Sold')->get();
-
-            $this->createRefund($request, $tickets, $ordersQty);
+            return $this->createRefund($request, $ticketsSold, $ticketsQtyAvailableToRefund, $ticketsQtyInOrder, $orderDetail);
 
         } catch (\Throwable $th) {
 
@@ -84,38 +81,56 @@ class TicketService extends BaseService
 
     }
 
-    protected function createRefund($request, $tickets, $ordersQty){
-
+    protected function createRefund($request, $ticketsSold, $ticketsQtyAvailableToRefund, $ticketsQtyInOrder, $orderDetail)
+    { 
+       
         DB::beginTransaction();
         try {
+            $ticketStatus = 'Refunded';
+            $orderStatus = '';
 
             for ($i = 0; $i < $request->quantity_to_refund; $i++) {
 
-                DB::table('tickets')
-                    ->where('id', $tickets[$i]['id'])
-                    ->update(['status' => 'Refunded']);
+                DB::table('tickets')->where('id', $ticketsSold[$i]['id'])->update([
+                    'status' => $ticketStatus,
+                ]);
+
+                $ticketType = DB::table('ticket_types')->where('id', $request->ticket_type_id);
+                $ticketType->increment('quantity_available');
+                $ticketType->decrement('quantity_sold');
 
                 $refund = new Refund([
-                    'ticket_id' => $tickets[$i]['id'],
-                    'date' => Carbon::now(),
-                    'time' => Carbon::now()->format('H:i'),
+                    'ticket_id' => $ticketsSold[$i]['id'],
+                    'datetime' => date('Y-m-d H:i:s'),
                     'reason' => $request->reason
                 ]);
-            }
 
-
-            if ($request->quantity_to_refund < $ordersQty) {
-                
             }
 
             $refund->save();
+
             DB::commit();
 
+            $ticketsRefunded = Ticket::where('order_detail_id', $orderDetail->id)->where('status', 'Refunded')->count();
+
+            if ($ticketsQtyInOrder > $ticketsRefunded) {
+                $orderStatus = 'Partial Refund';
+            }else{
+                $orderStatus = 'Complete Refund';
+            }
+
+            DB::table('orders')->where('id', $request->order_id)->update([
+                'status' => $orderStatus,
+            ]);
+
             return $this->successResponse(null, 200, "Tickets were refunded successfully");
+
+        } catch (\Exception $e) {
             
-        } catch (\Throwable $th) {
             DB::rollBack();
-            return $this->errorResponse($th, 500, "Something went wrong. Refund could not be proccess");
+        
+            return $this->errorResponse(null, 500, "Something went wrong. Refund could not be processed");
         }
+       
     }
 }

@@ -13,8 +13,7 @@ return new class () extends Migration {
         Schema::create('refunds', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('ticket_id')->references('id')->on('tickets')->onDelete('cascade');
-            $table->date('date');
-            $table->time('time');
+            $table->dateTime('datetime');
             $table->string('reason', 500)->nullable();
             $table->timestamps();
         });
