@@ -133,6 +133,11 @@ class EventService extends BaseService
 
             $event = Event::findOrFail($id);
 
+            if($event->status == "Published")
+            {
+                return $this->errorResponse(null, 400, "Event is already published");
+            }
+
             $publish = "Published";
 
             if($event->hasTickets()) {

@@ -85,7 +85,9 @@ class OrderService extends BaseService
 
             $orderTotal = OrderDetail::where('order_id', $order->id)->sum('total');
 
-            $payment = $this->postPayment($orderTotal);
+            $payment = $this->payment($orderTotal);
+
+            //return $payment;
 
             return $this->asignOrderAttendeePayment($attendee, $payment, $order, $request->order_details);
 
@@ -215,7 +217,7 @@ class OrderService extends BaseService
                 'amount' => $orderTotal,
                 'currency' => 'usd',
                 'payment_method' => 'pm_card_visa',
-              ]);
+            ]);
 
             return $response->id;
 
