@@ -38,33 +38,4 @@ class BaseService
 
         return $userValid;
     }
-
-    public function validateUserTicketTypes($id){
-
-        $userValid = true;
-
-        $event = Event::join('ticket_types', 'events.id', '=', 'ticket_types.event_id')
-                        ->where('events.organizer_id', auth()->user()->id)->where('events.id', $id)->get();
-
-        if(count($event) == 0 ){
-            $userValid = false;
-        }
-
-        return $userValid;
-    }
-
-    public function validateUserTicketTypesGet($id){
-
-        $userValid = true;
-
-        $event = Event::join('ticket_types', 'events.id', '=', 'ticket_types.event_id')
-                        ->where('events.organizer_id', auth()->user()->id)->where('ticket_types.id', $id)->get();
-
-        if(count($event) == 0 ){
-            $userValid = false;
-        }
-
-        return $userValid;
-    }
-
 }

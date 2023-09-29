@@ -11,44 +11,44 @@ use Illuminate\Http\Request;
 
 class EventController extends Controller
 {
-    public function __construct(protected Event $event)
+    public function __construct(EventService $eventService)
     {
-
+        $this->eventService = $eventService;
     }
 
     public function index(Request $request)
     {
-        return (new EventService())->index($request->all());
+        return $this->eventService->index($request->all());
     }
 
     public function myEvents(Request $request)
     {
-        return (new EventService())->myEvents($request->all());
+        return $this->eventService->myEvents($request->all());
     }
 
     public function store(CreateRequest $request)
     {
-        return (new EventService())->store($request);
+        return $this->eventService->store($request);
     }
 
     public function show($id)
     {
-        return (new EventService())->show($id);
+        return $this->eventService->show($id);
     }
 
     public function update(UpdateRequest $request, $id)
     {
-        return (new EventService())->update($request, $id);
+        return $this->eventService->update($request, $id);
     }
 
     public function destroy($id)
     {
-        return (new EventService())->destroy($id);
+        return $this->eventService->destroy($id);
     }
 
     public function publish($id)
     {
-        return (new EventService())->publish($id);
+        return $this->eventService->publish($id);
     }
 
 }

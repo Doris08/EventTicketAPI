@@ -10,23 +10,23 @@ use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
-    public function __construct(protected Order $order)
+    public function __construct(OrderService $orderService)
     {
-
+        $this->orderService = $orderService;
     }
 
     public function index(Request $request)
     {
-        return (new OrderService())->index($request->all());
+        return $this->orderService->index($request->all());
     }
 
     public function show($id)
     {
-        return (new OrderService())->show($id);
+        return $this->orderService->show($id);
     }
 
     public function store(CreateRequest $request)
     {
-        return (new OrderService())->store($request);
+        return $this->orderService->store($request);
     }
 }

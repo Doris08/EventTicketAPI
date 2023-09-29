@@ -51,4 +51,9 @@ class Order extends Model
     {
         return $this->hasMany(OrderDetail::class);
     }
+
+    public function attendee(): BelongsTo
+    {
+        return $this->BelongsTo(Attendee::class);
+    }
 }

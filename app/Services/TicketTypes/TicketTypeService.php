@@ -31,10 +31,10 @@ class TicketTypeService extends BaseService
     {
         try {
 
-            $userValid =  $this->validateUserTicketTypes($request->event_id);
+            $userValid = $this->validateUserEvents($request->event_id);
 
             if(!$userValid){
-                return $this->errorResponse(null, 400, "This user is not related to this ticket types event");
+                return $this->errorResponse(null, 400, "This user is not related to the event");
             }
 
             $ticketType = new TicketType();
@@ -73,10 +73,12 @@ class TicketTypeService extends BaseService
     {
         try {
 
-            $userValid =  $this->validateUserTicketTypesGet($id);
+            $ticketType = TicketType::findOrFail($id);
+
+            $userValid = $this->validateUserEvents($ticketType->event_id);
 
             if(!$userValid){
-                return $this->errorResponse(null, 400, "This user is not related to this event");
+                return $this->errorResponse(null, 400, "This user is not related to the event");
             }
 
             $ticketTypeResource = new TicketTypeResource(TicketType::findOrFail($id));
@@ -94,13 +96,13 @@ class TicketTypeService extends BaseService
     {
         try {
 
-            $userValid =  $this->validateUserTicketTypes($request->event_id);
+            $ticketType = TicketType::findOrFail($id);
+
+            $userValid = $this->validateUserEvents($ticketType->event_id);
 
             if(!$userValid){
-                return $this->errorResponse(null, 400, "This user is not related to this ticket types event");
+                return $this->errorResponse(null, 400, "This user is not related to the event");
             }
-
-            $ticketType = TicketType::findOrFail($id);
 
             if(!$ticketType->quantityAvailableLimit($request->quantity_available)) {
                 TicketType::where('id', $id)->update([
@@ -133,18 +135,18 @@ class TicketTypeService extends BaseService
     {
         try {
 
-            $userValid =  $this->validateUserTicketTypesGet($id);
+            $ticketType = TicketType::findOrFail($id);
+
+            $userValid = $this->validateUserEvents($ticketType->event_id);
 
             if(!$userValid){
-                return $this->errorResponse(null, 400, "This user is not related to this ticket types event");
+                return $this->errorResponse(null, 400, "This user is not related to the event");
             }
-
-            $ticketType = TicketType::findOrFail($id);
 
             if(!$ticketType->hasOrders()) {
                 TicketType::where('id', $id)->delete();
 
-                return $this->successResponse(null, 200, "Event deleted successfully");
+                return $this->successResponse(null, 200, "Ticket type deleted successfully");
 
             } else {
 

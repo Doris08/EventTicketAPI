@@ -11,6 +11,10 @@ use App\Models\TicketType;
 use App\Models\Ticket;
 use App\Services\BaseService;
 use Stripe;
+use Illuminate\Support\Facades\Notification;
+use App\Notifications\OrderCompleteNotification;
+use Illuminate\Database\Eloquent\Builder;
+use DB;
 
 class OrderService extends BaseService
 {
@@ -31,13 +35,13 @@ class OrderService extends BaseService
             if (isset($request['search'])) {
                 $search = $request['search'];
                 $orders = Order::where('user_id', $userId)
-                                ->join('events', 'events.id', '=', 'orders.event_id')
-                                ->join('attendees', 'attendees.id', '=', 'orders.attendee_id')
-                                ->join('ticket_types', 'events.id', '=', 'ticket_types.event_id')
-                                ->where('orders.purchase_date', 'LIKE', "%{$search}%")
-                                ->orWhere('events.name', 'LIKE', "%{$search}%")
-                                ->orWhere('attendees.name', 'LIKE', "%{$search}%")
-                                ->orWhere('ticket_types.name', 'LIKE', "%{$search}%");
+                                ->where('purchase_date', 'LIKE', '%' . $search . '%')
+                                ->orWhereHas('attendee', function (Builder $query) use ($search) {
+                                    $query->where('name', 'like', '%' . $search . '%');
+                                })
+                                ->orWhereHas('event', function (Builder $query) use ($search) {
+                                    $query->where('name', 'like', '%' . $search . '%');
+                                })->get();
                 $orderResources = OrderResource::collection($orders);
             }
 
@@ -54,6 +58,9 @@ class OrderService extends BaseService
     {
         $order = new Order();
         $attendee = new Attendee();
+
+        DB::beginTransaction();
+
         try {
 
             $attendee = Attendee::create([
@@ -75,11 +82,11 @@ class OrderService extends BaseService
                     $ticketType = TicketType::findOrFail($detail['ticket_type_id']);
 
                     if($detail['quantity'] > $ticketType->purchase_limit) {
-                        return  $this->verifyPurchaseLimit($order, $attendee, $detail, $ticketType);
+                        return $this->errorResponse(null, 400, "Quantity to buy for TicketType '".$ticketType->name."' is higher tha its purchase limit");
                     }
 
                     if($detail['quantity'] > $ticketType->quantity_available) {
-                        return $this->verifyQtyAvailable($order, $attendee, $detail, $ticketType);
+                        return $this->errorResponse(null, 400, "Quantity available for TicketType '".$ticketType->name."' is ".$ticketType->quantity_available ." ticket");
                     }
 
                     $orderDetail = $this->createOrderDetail($order, $ticketType, $detail);
@@ -96,13 +103,8 @@ class OrderService extends BaseService
 
 
         } catch (\Throwable $th) {
-            foreach ($order->orderDetails as $detail) {
-                foreach ($detail->tickets as $ticket) {
-                    $ticket->delete();
-                }
-                $detail->delete();
-            }
-            $order->delete();
+
+            DB::rollBack();
 
             return $this->errorResponse(null, 500, "Something went wrong. Order could not be created.");
         }
@@ -138,9 +140,6 @@ class OrderService extends BaseService
     {
 
         if($payment == 500) {
-            OrderDetail::where('order_id', $order->id)->delete();
-            $order->delete();
-            $attendee->delete();
 
             return $this->errorResponse(null, 400, "Payment could not be processed");
 
@@ -152,13 +151,19 @@ class OrderService extends BaseService
                 'payment_id' => $payment
             ]);
 
+            $order->save();
+
             $orderResources = new OrderResource($order);
+
+            DB::commit();
+
+            $this->sendOrderConfirmationEmail($order, $orderDetails);
 
             return $this->successResponse($orderResources, 201, "Order created successfully");
         }
     }
 
-    public function createTickets($orderDetail)
+    protected function createTickets($orderDetail)
     {
 
         for ($i = 0; $i < $orderDetail->quantity; $i++) {
@@ -170,7 +175,7 @@ class OrderService extends BaseService
         }
     }
 
-    public function updateTicketsQuantity($orderDetails)
+    protected function updateTicketsQuantity($orderDetails)
     {
         for ($i = 0; $i < count($orderDetails); $i++) {
 
@@ -178,27 +183,6 @@ class OrderService extends BaseService
             $ticketType->increment('quantity_sold', $orderDetails[$i]['quantity']);
             $ticketType->decrement('quantity_available', $orderDetails[$i]['quantity']);
         }
-    }
-
-    public function verifyPurchaseLimit($order, $attendee, $detail, $ticketType)
-    {
-
-        OrderDetail::where('order_id', $order->id)->delete();
-        $order->delete();
-        $attendee->delete();
-
-        return $this->errorResponse(null, 400, "Quantity to buy for TicketType '".$ticketType->name."' is higher tha its purchase limit");
-    }
-
-    public function verifyQtyAvailable($order, $attendee, $detail, $ticketType)
-    {
-
-        OrderDetail::where('order_id', $order->id)->delete();
-        $order->delete();
-        $attendee->delete();
-
-        return $this->errorResponse(null, 400, "Quantity available for TicketType '".$ticketType->name."' is ".$ticketType->quantity_available ." ticket");
-
     }
 
     protected function payment($orderTotal)
@@ -213,7 +197,7 @@ class OrderService extends BaseService
             );
 
             $response = $stripe->paymentIntents->create([
-                'amount' => (double)$orderTotal,
+                'amount' => 500,
                 'currency' => 'usd',
                 'payment_method' => 'pm_card_visa',
             ]);
@@ -225,4 +209,23 @@ class OrderService extends BaseService
             return 500;
         }
     }
+
+    protected function sendOrderConfirmationEmail($order, $orderDetail)
+    {
+        $confirmationMessage = [
+            "attendeeName" => $order->attendee->name,
+            "attendeeEmail" => $order->attendee->email,
+            "orderId" => $order->id,
+            "purchaseDate" => $order->purchase_date,
+        ];
+
+        try {
+
+            Notification::route('mail', 'doris.aquino@elaniin.com')->notify(new OrderCompleteNotification($confirmationMessage));
+
+        }catch (\Exception $ex) {
+            return $ex;
+        }
+    }
+
 }

@@ -44,33 +44,33 @@ class TicketService extends BaseService
 
     public function checkIn($request)
     {
+        DB::beginTransaction();
 
         try {
 
-            $ordersQty = OrderDetail::where('order_id', $request->order_id)
-                                    ->where('ticket_type_id', $request->ticket_type_id)->pluck('quantity');
+            $ticketsQtyAvailableToCheckIn = OrderDetail::where('order_id', $request->order_id)
+                                    ->join('tickets', 'order_details.id', '=', 'tickets.order_detail_id')
+                                    ->where('ticket_type_id', $request->ticket_type_id)
+                                    ->where('tickets.status', 'Sold')->count();
 
-            if($ordersQty[0] < $request->quantity_to_checkin) {
-                return $this->errorResponse(null, 400, "Cannot check-in tickets, quantity to check-in is higher than quantity available");
+            $ticketsQtyInOrder = OrderDetail::where('order_id', $request->order_id)
+                                    ->join('tickets', 'order_details.id', '=', 'tickets.order_detail_id')
+                                    ->where('ticket_type_id', $request->ticket_type_id)->count();
+
+            if($ticketsQtyAvailableToCheckIn < $request->quantity_to_checkin) {
+                return $this->errorResponse(null, 400, "Cannot check-in tickets, quantity to check-in is higher than quantity of tickets that can be checked-in for this order");
             }
 
-            $ticketsAvailable = OrderDetail::where('order_id', $request->order_id)
-                                            ->join('tickets', 'order_details.id', '=', 'tickets.order_detail_id')
-                                            ->where('tickets.status', 'Sold')->count();
-
-            if($ticketsAvailable < $request->quantity_to_checkin) {
-                return $this->errorResponse(null, 400, "Cannot refund, tickets are already in checked-in or refund status for this order");
-            }
-
-            $orderDetail = OrderDetail::where('order_id', $request->order_id)->where('ticket_type_id', $request->ticket_type_id)->get();
-            $tickets = Ticket::where('order_detail_id', $orderDetail[0]['id'])->where('status', 'Sold')->get();
+            $orderDetail = OrderDetail::where('order_id', $request->order_id)->where('ticket_type_id', $request->ticket_type_id)->first();
+            $tickets = Ticket::where('order_detail_id', $orderDetail->id)->where('status', 'Sold')->get();
 
             for ($i = 0; $i < $request->quantity_to_refund; $i++) {
-
                 DB::table('tickets')
                     ->where('id', $tickets[$i]['id'])
                     ->update(['status' => 'Checked-In']);
             }
+
+            DB::commit();
 
             return $this->successResponse(null, 200, "Tickets were checked-in successfully");
 

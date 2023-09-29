@@ -9,14 +9,20 @@ use App\Http\Requests\Refunds\CreateRequest;
 
 class TicketController extends Controller
 {
+
+    public function __construct(TicketService $ticketService)
+    {
+        $this->ticketService = $ticketService;
+    }
+
     public function refund(CreateRequest $request)
     {
-        return (new TicketService())->refund($request);
+        return $this->ticketService->refund($request);
     }
 
     public function checkIn(Request $request)
     {
-        return (new TicketService())->checkIn($request);
+        return $this->ticketService->checkIn($request);
     }
 
 }

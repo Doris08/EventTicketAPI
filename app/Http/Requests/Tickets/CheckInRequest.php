@@ -25,7 +25,6 @@ class CheckInRequest extends FormRequest
             'order_id' => 'required|exists:order_details,id',
             'ticket_type_id' => 'required|date',
             'quantity_to_checkin' => 'required|min:1',
-            'reason' => 'required|max:500',
         ];
     }
 

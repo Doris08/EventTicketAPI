@@ -11,33 +11,33 @@ use App\Services\TicketTypes\TicketTypeService;
 
 class TicketTypeController extends Controller
 {
-    public function __construct(protected TicketType $ticketType)
+    public function __construct(TicketTypeService $ticketTypeService)
     {
-
+        $this->ticketTypeService = $ticketTypeService;
     }
 
     public function index(Request $request)
     {
-        return (new TicketTypeService())->index($request->all());
+        return $this->ticketTypeService->index($request->all());
     }
 
     public function store(CreateRequest $request)
     {
-        return (new TicketTypeService())->store($request);
+        return $this->ticketTypeService->store($request);
     }
 
     public function show($id)
     {
-        return (new TicketTypeService())->show($id);
+        return $this->ticketTypeService->show($id);
     }
 
     public function update(UpdateRequest $request, $id)
     {
-        return (new TicketTypeService())->update($request, $id);
+        return $this->ticketTypeService->update($request, $id);
     }
 
     public function destroy($id)
     {
-        return (new TicketTypeService())->destroy($id);
+        return $this->ticketTypeService->destroy($id);
     }
 }
