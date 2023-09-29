@@ -21,6 +21,11 @@ class EventController extends Controller
         return (new EventService())->index($request->all());
     }
 
+    public function myEvents(Request $request)
+    {
+        return (new EventService())->myEvents($request->all());
+    }
+
     public function store(CreateRequest $request)
     {
         return (new EventService())->store($request);

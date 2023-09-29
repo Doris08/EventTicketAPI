@@ -39,6 +39,40 @@ class EventService extends BaseService
 
     }
 
+    public function myEvents($request)
+    {
+
+        $userId = auth()->user()->id;
+        try {
+            $paginate = null;
+            if (isset($request['limit'])) {
+                $paginate = $request['limit'];
+            }
+
+            $eventResources = EventResource::collection(Event::where('organizer_id', $userId)
+                                                        ->orderBy('name')->paginate($paginate));
+
+            if (isset($request['search'])) {
+                $search = $request['search'];
+
+                $events = Event::select("*")->where('organizer_id', $userId)
+                                ->where('name', 'LIKE', "%{$search}%")
+                                ->orWhere('description', 'LIKE', "%{$search}%")
+                                ->orWhere('start_date', 'LIKE', "%{$search}%")
+                                ->orWhere('location', 'LIKE', "%{$search}%")->paginate($paginate);
+
+                $eventResources = EventResource::collection($events);
+            }
+
+            return $this->successResponse($eventResources, 200, "Events founded successfully");
+
+        } catch (\Throwable $th) {
+
+            return $this->errorResponse(null, 500, "Something went wrong. Events could not be founded");
+        }
+
+    }
+
     public function store($request)
     {
         try {
@@ -83,6 +117,12 @@ class EventService extends BaseService
     public function update($request, $id)
     {
         try {
+            
+            $userValid =  $this->validateUserEvents($id);
+
+            if(!$userValid){
+                return $this->errorResponse(null, 400, "This user is not related to this event");
+            }
 
             Event::where('id', $id)->update([
                 'name' => $request->name,
@@ -110,6 +150,12 @@ class EventService extends BaseService
     {
         try {
 
+            $userValid =  $this->validateUserEvents($id);
+
+            if(!$userValid){
+                return $this->errorResponse(null, 400, "This user is not related to this event");
+            }
+
             $event = Event::findOrFail($id);
 
             if(!$event->hasOrders()) {
@@ -130,6 +176,12 @@ class EventService extends BaseService
     public function publish($id)
     {
         try {
+
+            $userValid =  $this->validateUserEvents($id);
+
+            if(!$userValid){
+                return $this->errorResponse(null, 400, "This user is not related to this event");
+            }
 
             $event = Event::findOrFail($id);
 
@@ -158,5 +210,7 @@ class EventService extends BaseService
         }
 
     }
+
+    
 
 }

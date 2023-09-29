@@ -36,6 +36,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::patch('/events/update/{id}', [EventController::class, 'update']);
     Route::delete('/events/delete/{id}', [EventController::class, 'destroy']);
     Route::patch('/events/publish/{id}', [EventController::class, 'publish']);
+    Route::get('/events/my_events', [EventController::class, 'myEvents']);
 
     //Routes for management of ticket types
     Route::post('/ticket_types/store', [TicketTypeController::class, 'store']);

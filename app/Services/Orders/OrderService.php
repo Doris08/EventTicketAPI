@@ -16,6 +16,8 @@ class OrderService extends BaseService
 {
     public function index($request)
     {
+
+        $userId = auth()->user()->id;
         try {
 
             $paginate = null;
@@ -23,11 +25,13 @@ class OrderService extends BaseService
                 $paginate = $request['limit'];
             }
 
-            $orderResources = OrderResource::collection(Order::orderBy('purchase_date')->paginate($paginate));
+            $orderResources = OrderResource::collection(Order::where('user_id', $userId)
+                                                        ->orderBy('purchase_date')->paginate($paginate));
 
             if (isset($request['search'])) {
                 $search = $request['search'];
-                $orders = Order::join('events', 'events.id', '=', 'orders.event_id')
+                $orders = Order::where('user_id', $userId)
+                                ->join('events', 'events.id', '=', 'orders.event_id')
                                 ->join('attendees', 'attendees.id', '=', 'orders.attendee_id')
                                 ->join('ticket_types', 'events.id', '=', 'ticket_types.event_id')
                                 ->where('orders.purchase_date', 'LIKE', "%{$search}%")

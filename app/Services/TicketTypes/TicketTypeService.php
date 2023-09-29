@@ -31,6 +31,12 @@ class TicketTypeService extends BaseService
     {
         try {
 
+            $userValid =  $this->validateUserTicketTypes($request->event_id);
+
+            if(!$userValid){
+                return $this->errorResponse(null, 400, "This user is not related to this ticket types event");
+            }
+
             $ticketType = new TicketType();
 
             if (!$ticketType->ticketsLimit($request->event_id)) {
@@ -67,6 +73,12 @@ class TicketTypeService extends BaseService
     {
         try {
 
+            $userValid =  $this->validateUserTicketTypesGet($id);
+
+            if(!$userValid){
+                return $this->errorResponse(null, 400, "This user is not related to this event");
+            }
+
             $ticketTypeResource = new TicketTypeResource(TicketType::findOrFail($id));
 
             return $this->successResponse($ticketTypeResource, 200, "Ticket type founded successfully");
@@ -81,6 +93,12 @@ class TicketTypeService extends BaseService
     public function update($request, $id)
     {
         try {
+
+            $userValid =  $this->validateUserTicketTypes($request->event_id);
+
+            if(!$userValid){
+                return $this->errorResponse(null, 400, "This user is not related to this ticket types event");
+            }
 
             $ticketType = TicketType::findOrFail($id);
 
@@ -114,6 +132,12 @@ class TicketTypeService extends BaseService
     public function destroy($id)
     {
         try {
+
+            $userValid =  $this->validateUserTicketTypesGet($id);
+
+            if(!$userValid){
+                return $this->errorResponse(null, 400, "This user is not related to this ticket types event");
+            }
 
             $ticketType = TicketType::findOrFail($id);
 
